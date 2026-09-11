@@ -571,11 +571,103 @@ section,.panel,.wheelCard{
   margin-bottom:18px !important;
 }
 
+
+/* ===== 起始頁獨立標題字卡 ===== */
+.startTitleCard{
+  margin:12px auto 16px;
+  padding:18px 20px;
+  border-radius:26px;
+  background:linear-gradient(180deg,rgba(255,250,240,.98),rgba(247,236,218,.98));
+  border:2px solid rgba(194,151,78,.58);
+  box-shadow:0 10px 26px rgba(51,33,22,.28),inset 0 1px 0 rgba(255,255,255,.85);
+  text-align:center;
+}
+.startTitleCard .mainTitle{
+  font-family:"Noto Serif TC","DFKai-SB","KaiTi","PMingLiU",serif;
+  font-size:clamp(30px,8vw,48px);
+  line-height:1.2;
+  font-weight:900;
+  letter-spacing:.08em;
+  color:#2F241F;
+  text-shadow:0 2px 0 rgba(255,255,255,.75);
+}
+.startTitleCard .subMark{
+  margin-top:6px;
+  font-size:13px;
+  color:#8A6A4B;
+  letter-spacing:.18em;
+}
+
+
+/* ===== 標題左側：冒煙美食碗圖示 ===== */
+.startTitleCard .titleRow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+}
+.foodBowlIcon{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:58px;
+  height:58px;
+  flex:0 0 58px;
+  font-size:44px;
+  line-height:1;
+  filter:drop-shadow(0 3px 4px rgba(74,48,31,.18));
+}
+.foodBowlIcon .steam{
+  position:absolute;
+  top:-10px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:5px;
+  pointer-events:none;
+}
+.foodBowlIcon .steam i{
+  display:block;
+  width:3px;
+  height:16px;
+  border-radius:999px;
+  background:rgba(125,104,88,.48);
+  animation:steamFloat 1.8s ease-in-out infinite;
+}
+.foodBowlIcon .steam i:nth-child(2){
+  animation-delay:.35s;
+  height:20px;
+}
+.foodBowlIcon .steam i:nth-child(3){
+  animation-delay:.7s;
+  height:14px;
+}
+@keyframes steamFloat{
+  0%{transform:translateY(4px) scaleY(.85);opacity:.15}
+  50%{transform:translateY(-3px) scaleY(1);opacity:.62}
+  100%{transform:translateY(-8px) scaleY(.88);opacity:0}
+}
+@media(max-width:480px){
+  .startTitleCard .titleRow{gap:10px}
+  .foodBowlIcon{width:48px;height:48px;flex-basis:48px;font-size:38px}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="hero">
+  
+<div class="startTitleCard">
+  <div class="titleRow">
+    <span class="foodBowlIcon" aria-hidden="true">
+      <span class="steam"><i></i><i></i><i></i></span>
+      🍜
+    </span>
+    <div class="mainTitle">今天吃什麼？</div>
+  </div>
+</div>
+<header class="hero">
     <h1>🍜 今天吃什麼？</h1>
     <p>簡饌佳餚滿案香，建榛造設味千般。<br>鴻賓共聚嘗珍饈，譔美珍饈盛宴歡。</p>
     <span class="badge">有夢最美，築夢踏實。</span>
