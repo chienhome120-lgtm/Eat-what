@@ -35,17 +35,23 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
 .hidden{display:none!important}
 .count{font-size:14px;color:var(--muted);margin:6px 0 0}
 .list{display:grid;gap:8px;margin-top:10px}
-.item{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:15px;background:#fff}
+.item{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#fff,#f7efe5);box-shadow:0 5px 14px rgba(58,45,34,.08);transition:.18s transform,.18s box-shadow;cursor:pointer}
+.item:active{transform:scale(.985)}
+.item.hasSite:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(58,45,34,.14)}
+.siteHint{font-size:11px;color:#6f8b78;font-weight:800;margin-top:4px}
 .rank{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#eee4d8;font-weight:900}
 .item b{display:block}.item small{display:block;color:var(--muted);margin-top:3px}
 .mapmini{min-height:38px;padding:8px 10px;background:#e7efe9;color:#315943}
 .wheelCard{text-align:center}
 .pointer{width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:31px solid var(--accent);margin:0 auto -10px;position:relative;z-index:4;filter:drop-shadow(0 3px 2px rgba(0,0,0,.22))}
-.stage{perspective:950px;display:flex;justify-content:center}
-.wheelWrap{width:min(88vw,520px);aspect-ratio:1;position:relative;transform:rotateX(8deg);transform-style:preserve-3d}
-.wheelWrap:after{content:"";position:absolute;inset:6%;border-radius:50%;background:rgba(75,57,46,.25);transform:translateY(17px);filter:blur(9px);z-index:-1}
-#wheel{width:100%;height:100%;transition:transform 5.2s cubic-bezier(.12,.68,.12,1);filter:drop-shadow(0 12px 8px rgba(72,52,42,.18))}
-.hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:18%;aspect-ratio:1;border-radius:50%;background:linear-gradient(#f9ead6,#c8a979);border:6px solid #fff6e8;box-shadow:0 5px 15px rgba(0,0,0,.2);display:grid;place-items:center;font-size:11px;font-weight:900}
+.stage{perspective:1100px;display:flex;justify-content:center;padding:8px 0 18px}
+.wheelWrap{width:min(88vw,520px);aspect-ratio:1;position:relative;transform:rotateX(14deg) rotateZ(0deg);transform-style:preserve-3d;filter:drop-shadow(0 24px 18px rgba(50,35,25,.24))}
+.wheelDepth{position:absolute;inset:2.5%;border-radius:50%;background:linear-gradient(180deg,#5d4636,#2f241d);transform:translateZ(-22px) translateY(18px);box-shadow:inset 0 -10px 16px rgba(0,0,0,.38),0 16px 20px rgba(0,0,0,.20)}
+.wheelRim{position:absolute;inset:-1.5%;border-radius:50%;background:conic-gradient(#f6e6bd,#8c6c3c,#f9eecb,#846235,#f7dca4,#6f522f,#f6e6bd);transform:translateZ(-5px);box-shadow:inset 0 0 0 8px rgba(255,255,255,.18),inset 0 -16px 18px rgba(67,42,18,.25)}
+#wheel{position:absolute;inset:2.5%;width:95%;height:95%;transition:transform 5.2s cubic-bezier(.08,.72,.08,1);filter:drop-shadow(0 8px 5px rgba(50,34,24,.20));transform-style:preserve-3d;backface-visibility:hidden}
+.wheelGlass{position:absolute;inset:4.5%;border-radius:50%;pointer-events:none;transform:translateZ(8px);background:radial-gradient(circle at 32% 23%,rgba(255,255,255,.36),rgba(255,255,255,.08) 28%,rgba(255,255,255,0) 53%),linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,0) 45%);box-shadow:inset 0 0 24px rgba(255,255,255,.18)}
+.hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateZ(16px);width:19%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff5d6 0 12%,#d6ad63 34%,#8f6333 68%,#52351e 100%);border:7px solid #f6e2b2;box-shadow:0 9px 18px rgba(0,0,0,.32),inset 0 3px 7px rgba(255,255,255,.55);display:grid;place-items:center;font-size:11px;font-weight:900;color:#fff;text-shadow:0 1px 2px #5f3c23}
+.pointer{filter:drop-shadow(0 5px 3px rgba(0,0,0,.32));transform:translateZ(30px)}
 .spin{margin-top:12px;max-width:520px}
 .result{margin-top:12px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px}
 .result h2{margin:0 0 7px;font-size:23px}.result p{margin:6px 0;color:var(--muted);line-height:1.5}
@@ -113,7 +119,10 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
     <div class="pointer"></div>
     <div class="stage">
       <div class="wheelWrap">
+        <div class="wheelDepth"></div>
+        <div class="wheelRim"></div>
         <svg id="wheel" viewBox="0 0 500 500" aria-label="美食轉盤"></svg>
+        <div class="wheelGlass"></div>
         <div class="hub">今天<br>吃它</div>
       </div>
     </div>
@@ -148,6 +157,42 @@ function mapUrl(p){
   return `https://www.google.com/maps/search/?api=1&query=${q}`;
 }
 function phoneOf(tags={}){return tags.phone||tags["contact:phone"]||tags["contact:mobile"]||""}
+function websiteOf(tags={}){
+  let u=tags.website||tags["contact:website"]||tags["brand:website"]||"";
+  if(u && !/^https?:\/\//i.test(u)) u="https://"+u;
+  return u;
+}
+let audioCtx=null, spinSoundTimer=null;
+function ensureAudio(){
+  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==="suspended") audioCtx.resume();
+}
+function tone(freq=440,dur=.08,type="sine",gain=.05,when=0){
+  ensureAudio();
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.type=type;o.frequency.setValueAtTime(freq,audioCtx.currentTime+when);
+  g.gain.setValueAtTime(0.0001,audioCtx.currentTime+when);
+  g.gain.exponentialRampToValueAtTime(gain,audioCtx.currentTime+when+.01);
+  g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+when+dur);
+  o.connect(g).connect(audioCtx.destination);
+  o.start(audioCtx.currentTime+when);o.stop(audioCtx.currentTime+when+dur+.02);
+}
+function startSpinSound(){
+  ensureAudio(); let i=0;
+  if(spinSoundTimer) clearInterval(spinSoundTimer);
+  spinSoundTimer=setInterval(()=>{
+    const f=180+(i%6)*22;
+    tone(f,.045,"triangle",.035);
+    i++;
+  },95);
+}
+function stopSpinSound(){
+  if(spinSoundTimer){clearInterval(spinSoundTimer);spinSoundTimer=null;}
+}
+function winSound(){
+  [523,659,784,1047].forEach((f,i)=>tone(f,.22,"sine",.07,i*.11));
+  tone(1318,.36,"triangle",.05,.44);
+}
 function cuisineOf(tags={}){
   const c=(tags.cuisine||"").replaceAll(";","、").replaceAll("_"," ");
   return c || ({restaurant:"餐廳",fast_food:"小吃 / 速食",cafe:"咖啡 / 輕食",food_court:"美食廣場"}[tags.amenity]||"美食");
@@ -245,16 +290,23 @@ async function searchNearby(lat,lon){
 }
 
 function renderList(){
-  countEl.textContent=`依距離與公開資料完整度，挑出 ${places.length} 家候選。`;
-  listEl.innerHTML=places.map((p,i)=>`
-    <div class="item">
+  countEl.textContent=`依距離與公開資料完整度，挑出 ${places.length} 家候選。點有「官網」標示的店家字卡，可直接開啟官方網站。`;
+  listEl.innerHTML=places.map((p,i)=>{
+    const site=websiteOf(p.tags);
+    return `
+    <div class="item ${site?"hasSite":""}" ${site?`data-site="${esc(site)}"`:""}>
       <div class="rank">${i+1}</div>
       <div>
         <b>${esc(p.name)}</b>
         <small>${Math.round(p.dist)} 公尺・${esc(cuisineOf(p.tags))}${phoneOf(p.tags)?"・有電話":""}</small>
+        <div class="siteHint">${site?"🌐 點字卡開啟店家官網":"尚無公開官網資料"}</div>
       </div>
-      <a href="${mapUrl(p)}" target="_blank" rel="noopener"><button class="mapmini">地圖</button></a>
-    </div>`).join("");
+      <a href="${mapUrl(p)}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><button class="mapmini">地圖</button></a>
+    </div>`;
+  }).join("");
+  document.querySelectorAll(".item.hasSite").forEach(el=>{
+    el.addEventListener("click",()=>window.open(el.dataset.site,"_blank","noopener"));
+  });
 }
 function polar(cx,cy,r,a){const x=cx+r*Math.cos(rad(a)),y=cy+r*Math.sin(rad(a));return[x,y]}
 function wedgePath(start,end){
@@ -279,6 +331,7 @@ function drawWheel(){
 $("#spinBtn").onclick=()=>{
   if(!places.length||busy)return;
   busy=true;$("#spinBtn").disabled=true;resultEl.innerHTML="";
+  ensureAudio(); startSpinSound();
   const n=places.length, idx=Math.floor(Math.random()*n), step=360/n;
   const target=-(idx*step+step/2);
   const extra=360*(5+Math.floor(Math.random()*3));
@@ -287,7 +340,7 @@ $("#spinBtn").onclick=()=>{
   const delta=(desired-normalized+360)%360;
   currentRotation+=extra+delta;
   wheel.style.transform=`rotate(${currentRotation}deg)`;
-  setTimeout(()=>{showWinner(places[idx]);busy=false;$("#spinBtn").disabled=false},5300);
+  setTimeout(()=>{stopSpinSound();winSound();showWinner(places[idx]);busy=false;$("#spinBtn").disabled=false},5300);
 };
 function showWinner(p){
   const phone=phoneOf(p.tags), addr=buildAddress(p.tags);
@@ -300,6 +353,7 @@ function showWinner(p){
       <p>電話：${phone?`<a href="tel:${esc(phone)}">${esc(phone)}</a>`:"公開地圖資料未提供，可到 Google Maps 查看"}</p>
       <div class="actions">
         <a href="${mapUrl(p)}" target="_blank" rel="noopener"><button class="secondary">🗺️ Google Maps 導航</button></a>
+        ${websiteOf(p.tags)?`<a href="${esc(websiteOf(p.tags))}" target="_blank" rel="noopener"><button class="secondary">🌐 店家官網</button></a>`:""}
         <button class="ghost" onclick="document.querySelector('#spinBtn').click()">🙈 不想吃，再轉一次</button>
       </div>
     </div>`;
