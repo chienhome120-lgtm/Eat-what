@@ -342,6 +342,235 @@ button:active,
   box-shadow:0 5px 12px rgba(82,107,91,.18) !important;
 }
 
+
+/* ===== 海報風格 UI：只改視覺，不動搜尋/定位/轉盤邏輯 ===== */
+:root{
+  --paper:#F8F0E2;
+  --paper2:#FFF9EF;
+  --ink:#2F241F;
+  --gold:#C99845;
+  --gold2:#F5D782;
+  --wine:#A93636;
+  --wine2:#C54A3F;
+  --green:#748A76;
+  --soft:#EDE2D6;
+  --muted:#7B6A60;
+}
+
+html,body{
+  background:#4B3728 !important;
+}
+body{
+  color:var(--ink) !important;
+}
+body::before{
+  background-image:
+    linear-gradient(rgba(58,42,30,.32),rgba(58,42,30,.42)),
+    url("https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1800&q=88") !important;
+  background-size:cover !important;
+  background-position:center !important;
+  filter:saturate(1.1) contrast(1.04) brightness(.88) !important;
+}
+body::after{
+  background:
+    radial-gradient(circle at 50% 7%,rgba(255,246,220,.16),transparent 30%),
+    linear-gradient(180deg,rgba(255,244,220,.04),rgba(40,25,16,.10)) !important;
+}
+
+.app,.container,main{
+  max-width:760px !important;
+  margin:auto !important;
+}
+
+/* 上方題字區 */
+.hero{
+  position:relative;
+  background:
+    linear-gradient(180deg,rgba(255,249,238,.97),rgba(246,235,218,.97)) !important;
+  border:2px solid rgba(194,151,78,.55) !important;
+  border-radius:28px !important;
+  box-shadow:0 10px 28px rgba(51,33,22,.30),inset 0 1px 0 rgba(255,255,255,.85) !important;
+  padding:24px 22px 20px !important;
+  overflow:hidden;
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 10% 80%,rgba(111,145,86,.10),transparent 18%),
+    radial-gradient(circle at 90% 75%,rgba(111,145,86,.08),transparent 20%);
+}
+.hero h1{
+  display:none !important;
+}
+.hero p,
+.hero .subtitle,
+.hero .desc{
+  font-family:"Noto Serif TC","DFKai-SB","KaiTi","PMingLiU",serif !important;
+  color:#3B2B23 !important;
+  font-size:clamp(18px,4.6vw,30px) !important;
+  line-height:1.8 !important;
+  font-weight:700 !important;
+  letter-spacing:.08em !important;
+  text-align:center !important;
+  margin:0 !important;
+}
+.badge,.pill,.tag{
+  background:#9B676B !important;
+  color:#FFF9F5 !important;
+  border:1px solid rgba(255,255,255,.35) !important;
+  box-shadow:0 5px 12px rgba(80,45,47,.18) !important;
+}
+
+/* 卡片做成海報米紙 */
+.panel,.wheelCard,.resultCard,.winner,.card,.searchPanel{
+  background:rgba(255,249,239,.96) !important;
+  border:2px solid rgba(199,153,77,.48) !important;
+  border-radius:26px !important;
+  box-shadow:0 10px 26px rgba(45,30,20,.26) !important;
+  backdrop-filter:blur(4px) !important;
+}
+.stepTitle,.sectionTitle,.title{
+  color:#231B17 !important;
+  font-weight:900 !important;
+  letter-spacing:.02em !important;
+}
+
+/* 定位 / 手動按鈕：海報中的墨蘭迪綠 */
+#gpsTab,#areaTab{
+  background:#E5E5DD !important;
+  color:#4D5D50 !important;
+  border:1px solid #C9D0C7 !important;
+  border-radius:20px !important;
+  box-shadow:none !important;
+}
+#gpsTab.active,#areaTab.active{
+  background:linear-gradient(135deg,#819783,#6D8472) !important;
+  color:#fff !important;
+  border-color:#6D8472 !important;
+  box-shadow:0 6px 14px rgba(70,96,77,.22) !important;
+}
+
+/* 搜尋按鈕與主要 CTA：海報酒紅 */
+button,.primaryBtn,#gpsBtn,#areaBtn,#spinBtn{
+  border-radius:20px !important;
+  border:1.5px solid rgba(255,232,214,.75) !important;
+  background:linear-gradient(180deg,#B33E3A 0%,#9D302F 100%) !important;
+  color:#FFF9F5 !important;
+  box-shadow:
+    0 8px 18px rgba(73,31,28,.28),
+    inset 0 1px 0 rgba(255,255,255,.28) !important;
+  text-shadow:0 1px 2px rgba(55,20,18,.25) !important;
+  font-weight:900 !important;
+}
+button:active,.primaryBtn:active,#gpsBtn:active,#areaBtn:active,#spinBtn:active{
+  background:#8E2C2B !important;
+  transform:translateY(1px) !important;
+}
+
+/* 表單 */
+input,select{
+  background:#FFFDF7 !important;
+  border:1.5px solid #D8C7B0 !important;
+  border-radius:16px !important;
+  color:#3B302A !important;
+  box-shadow:inset 0 1px 3px rgba(72,54,40,.06) !important;
+}
+
+/* 店家字卡 */
+.storeCard{
+  background:linear-gradient(180deg,#FFFDF7,#F8EFE2) !important;
+  border:1.5px solid #D8C3A4 !important;
+  border-radius:20px !important;
+  box-shadow:0 7px 16px rgba(62,42,28,.14) !important;
+}
+.rank{
+  background:linear-gradient(180deg,#B24847,#8F3132) !important;
+  color:white !important;
+  box-shadow:0 4px 9px rgba(74,37,36,.18) !important;
+}
+.mapBtn{
+  background:linear-gradient(180deg,#7B9380,#677C6B) !important;
+  color:white !important;
+  border-radius:14px !important;
+  box-shadow:0 4px 10px rgba(60,82,65,.18) !important;
+}
+
+/* 轉盤海報感 */
+.wheelCard{
+  padding-top:20px !important;
+}
+.pointer{
+  border-top-color:#C6352E !important;
+  filter:drop-shadow(0 6px 4px rgba(76,28,25,.34)) !important;
+}
+.wheelWrap{
+  width:min(92vw,560px) !important;
+  transform:rotateX(7deg) !important;
+  filter:drop-shadow(0 24px 20px rgba(35,22,14,.36)) !important;
+}
+.wheelDepth{
+  background:linear-gradient(180deg,#7E572B,#2B1D14) !important;
+  transform:translateZ(-20px) translateY(16px) !important;
+}
+.wheelRim{
+  inset:-1.5% !important;
+  background:
+    radial-gradient(circle at 35% 25%,#FFF3B7 0 5%,#E7BE5A 18%,#B47924 52%,#7A4A17 80%,#4C2D10 100%) !important;
+  box-shadow:
+    inset 0 0 0 6px rgba(255,255,255,.32),
+    inset 0 0 0 13px rgba(125,77,24,.20),
+    inset 0 -12px 20px rgba(60,32,12,.30),
+    0 0 24px rgba(226,179,71,.32) !important;
+}
+#wheel{
+  filter:drop-shadow(0 8px 7px rgba(44,27,17,.20)) !important;
+}
+.wheelGlass{
+  background:
+    radial-gradient(circle at 30% 19%,rgba(255,255,255,.32),rgba(255,255,255,.08) 27%,rgba(255,255,255,0) 52%) !important;
+}
+.hub{
+  width:20% !important;
+  background:
+    radial-gradient(circle at 35% 27%,#FFFCE0 0 8%,#F4D56A 28%,#C58D2D 60%,#754316 100%) !important;
+  border:6px solid #FFE59A !important;
+  box-shadow:
+    0 8px 18px rgba(53,31,15,.34),
+    inset 0 3px 7px rgba(255,255,255,.56) !important;
+  color:#4B2F13 !important;
+  text-shadow:0 1px 0 rgba(255,255,255,.45) !important;
+}
+
+/* 下方資訊與小提示 */
+.status,.hint,.small,.muted{
+  color:#715F53 !important;
+}
+.status.ok{color:#607662 !important;}
+.status.err{color:#9B3535 !important;}
+
+/* 底部功能列海報風 */
+.bottomNav,.navBar,.toolbar{
+  background:rgba(247,237,221,.97) !important;
+  border:1.5px solid rgba(202,163,101,.5) !important;
+  border-radius:24px !important;
+  box-shadow:0 9px 22px rgba(43,28,17,.24) !important;
+}
+.bottomNav button,.navBar button,.toolbar button{
+  background:#FFF8EB !important;
+  color:#3E342D !important;
+  border:1px solid #D9C7AA !important;
+  box-shadow:0 4px 10px rgba(66,45,30,.12) !important;
+  text-shadow:none !important;
+}
+
+/* 整體留白與手機比例 */
+section,.panel,.wheelCard{
+  margin-bottom:18px !important;
+}
+
 </style>
 </head>
 <body>
@@ -383,6 +612,7 @@ button:active,
         <option value="restaurant">餐廳</option>
         <option value="fast_food">小吃 / 速食</option>
         <option value="cafe">咖啡 / 輕食</option>
+        <option value="drink">飲料</option>
       </select>
     </div>
 
@@ -600,6 +830,7 @@ function winSound(){
 }
 function cuisineOf(tags={}){
   const c=(tags.cuisine||"").replaceAll(";","、").replaceAll("_"," ");
+  if(tags.shop==="beverages" || /bubble_tea|tea|coffee|juice|smoothie/i.test(c||"")) return "飲料";
   return c || ({restaurant:"餐廳",fast_food:"小吃 / 速食",cafe:"咖啡 / 輕食",food_court:"美食廣場"}[tags.amenity]||"美食");
 }
 function buildAddress(t={}){
@@ -679,13 +910,24 @@ async function searchNearby(lat,lon,fromArea=false){
   if(busy)return; busy=true;
   placesCard.classList.add("hidden");wheelCard.classList.add("hidden");resultEl.innerHTML="";
   const radius=+$("#radius").value, type=$("#foodType").value;
-  setStatus("正在快速搜尋附近餐廳與小吃…");
-  const amenityFilter = type==="all" ? 'restaurant|fast_food|cafe|food_court' : type;
-  const q=`[out:json][timeout:7];
-  (
-    nwr["amenity"~"^(${amenityFilter})$"](around:${radius},${lat},${lon});
-  );
-  out center tags 120;`;
+  setStatus(type==="drink" ? "正在快速搜尋附近飲料店…" : "正在快速搜尋附近餐廳與小吃…");
+  let q;
+  if(type==="drink") {
+    q=`[out:json][timeout:7];
+    (
+      nwr["shop"="beverages"](around:${radius},${lat},${lon});
+      nwr["cuisine"~"bubble_tea|tea|coffee|juice|smoothie",i](around:${radius},${lat},${lon});
+      nwr["amenity"="cafe"](around:${radius},${lat},${lon});
+    );
+    out center tags 120;`;
+  } else {
+    const amenityFilter = type==="all" ? 'restaurant|fast_food|cafe|food_court' : type;
+    q=`[out:json][timeout:7];
+    (
+      nwr["amenity"~"^(${amenityFilter})$"](around:${radius},${lat},${lon});
+    );
+    out center tags 120;`;
+  }
   const endpoints=[
     "https://overpass.kumi.systems/api/interpreter",
     "https://overpass-api.de/api/interpreter",
@@ -782,7 +1024,7 @@ function wedgePath(start,end){
 }
 function drawWheel(){
   const n=places.length, step=360/n;
-  const colors=["#ff5a5f","#2fbf71","#ff9f1c","#9b5de5","#00b4d8","#f15bb5","#8ac926","#ff6b35","#4361ee","#f6bd60"];
+  const colors=["#C23A36","#D46A2A","#D5A01F","#3E9A43","#149688","#2667B2","#6840A5","#B72D78","#D56A72","#A56A3D"];
   let svg="";
   places.forEach((p,i)=>{
     const s=-90+i*step,e=s+step,mid=s+step/2;
