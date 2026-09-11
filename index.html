@@ -128,8 +128,9 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
     <div id="areaPane" class="hidden">
       <div class="row">
         <input id="areaInput" placeholder="例如：萬華龍山寺、板橋車站、高雄巨蛋">
-        <button id="areaBtn" class="secondary">搜尋</button>
+        <button id="areaBtn" class="secondary">Google 搜尋</button>
       </div>
+      <div class="tip" style="margin-top:6px">輸入後會直接開 Google Maps 搜尋「這個地點附近的美食」，不再等待地名定位。</div>
     </div>
 
     <div class="filters">
@@ -147,8 +148,8 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
       </select>
     </div>
 
-    <div id="status" class="status">第一次使用不用設定任何東西，直接按上面的按鈕即可。</div>
-    <div class="tip">※ 免設定版使用 OpenStreetMap 公開地點資料，因此不會直接抓取 Google 星等／評論數；選中後可一鍵打開 Google Maps 查看最新評分、營業時間與導航。地名搜尋已加入快速備援與逾時切換。</div>
+    <div id="status" class="status">GPS 模式可直接抓附近店家並使用轉盤；手動輸入地點則直接交給 Google Maps 搜尋，速度最快。</div>
+    <div class="tip">※ 手機定位模式：使用公開地圖資料抓附近店家，可直接進入轉盤。手動輸入地點模式：不再做慢速地名定位，會直接開啟 Google Maps 搜尋該地點附近美食。</div>
   </section>
 
   <section id="placesCard" class="card hidden">
@@ -341,41 +342,25 @@ $("#foodType").onchange=()=>{};
 
 async function searchArea(){
   const q=$("#areaInput").value.trim();
-  if(!q){setStatus("請先輸入地區，例如：萬華龍山寺。","err");return}
-  if(busy) return;
-
-  setStatus(`正在快速定位「${q}」…`);
-  $("#areaBtn").disabled=true;
-
-  const nominatim=async()=>{
-    const u=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=tw&accept-language=zh-TW&q=${encodeURIComponent(q)}`;
-    const r=await fetchWithTimeout(u,{headers:{"Accept":"application/json"}},4200);
-    if(!r.ok) throw new Error("Nominatim");
-    const d=await r.json();
-    if(!d.length) throw new Error("not found");
-    return {lat:+d[0].lat,lon:+d[0].lon};
-  };
-
-  const photon=async()=>{
-    const u=`https://photon.komoot.io/api/?limit=1&lang=zh&q=${encodeURIComponent(q+", Taiwan")}`;
-    const r=await fetchWithTimeout(u,{headers:{"Accept":"application/json"}},4200);
-    if(!r.ok) throw new Error("Photon");
-    const d=await r.json();
-    const f=d?.features?.[0];
-    if(!f) throw new Error("not found");
-    return {lat:+f.geometry.coordinates[1],lon:+f.geometry.coordinates[0]};
-  };
-
-  try{
-    const pos=await firstSuccessful([nominatim(),photon()]);
-    setStatus("已找到位置，正在抓附近美食…","ok");
-    await searchNearby(pos.lat,pos.lon,true);
-  }catch(e){
-    busy=false;
-    setStatus("地名定位逾時或找不到位置。建議輸入較完整名稱，例如「新北市板橋車站」。","err");
-  }finally{
-    $("#areaBtn").disabled=false;
+  if(!q){
+    setStatus("請先輸入地區，例如：板橋車站、龍山寺、西門町。","err");
+    return;
   }
+
+  // 免 API Key：直接交給 Google Maps 搜尋，不再經過第三方地名轉座標服務
+  const foodType=$("#foodType").value;
+  const typeText={
+    all:"美食 餐廳 小吃",
+    restaurant:"餐廳",
+    fast_food:"小吃 速食",
+    cafe:"咖啡 輕食"
+  }[foodType] || "美食 餐廳";
+
+  const query=encodeURIComponent(`${q} 附近 ${typeText}`);
+  const url=`https://www.google.com/maps/search/?api=1&query=${query}`;
+
+  setStatus(`正在開啟 Google Maps 搜尋「${q} 附近美食」…`,"ok");
+  window.open(url,"_blank","noopener");
 }
 
 async function searchNearby(lat,lon,fromArea=false){
