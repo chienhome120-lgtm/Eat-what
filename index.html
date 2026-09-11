@@ -256,6 +256,92 @@ input,select{
   background:#88706A !important;
 }
 
+
+/* ===== 全介面強調色：墨蘭迪酒紅色系 ===== */
+:root{
+  --wine:#8D5A62;
+  --wine-dark:#70464D;
+  --wine-light:#B88990;
+  --wine-pale:#E8D8DB;
+}
+
+/* 所有原本橘色/橘紅色的主要按鈕 */
+button,
+.primaryBtn,
+#gpsBtn,
+#areaBtn,
+#spinBtn{
+  background:linear-gradient(135deg,#9A6870 0%,#87565E 55%,#74464E 100%) !important;
+  color:#fff !important;
+  border:1px solid #7D5057 !important;
+  box-shadow:0 7px 16px rgba(112,70,77,.22) !important;
+  text-shadow:none !important;
+}
+button:active,
+.primaryBtn:active,
+#gpsBtn:active,
+#areaBtn:active,
+#spinBtn:active{
+  background:#70464D !important;
+}
+
+/* 定位 / 手動輸入 分頁 */
+#gpsTab,
+#areaTab{
+  background:#E8D8DB !important;
+  color:#654B50 !important;
+  border:1px solid #D3BEC2 !important;
+  box-shadow:none !important;
+}
+#gpsTab.active,
+#areaTab.active,
+.tab.active{
+  background:#8D5A62 !important;
+  color:#fff !important;
+  border-color:#8D5A62 !important;
+  box-shadow:0 5px 12px rgba(112,70,77,.18) !important;
+}
+
+/* 標籤、徽章、排名等原本亮橘強調 */
+.badge,
+.pill,
+.tag,
+.rank{
+  background:linear-gradient(135deg,#A7757C,#83535B) !important;
+  color:#fff !important;
+  border:none !important;
+  box-shadow:0 4px 10px rgba(112,70,77,.18) !important;
+}
+
+/* 文字底線/小型強調 */
+.storeName{
+  text-decoration-color:#8D5A62 !important;
+}
+
+/* 轉盤指針也統一酒紅 */
+.pointer{
+  border-top-color:#8D5A62 !important;
+  filter:drop-shadow(0 5px 4px rgba(90,53,60,.28)) !important;
+}
+
+
+/* ===== 定位 / 自訂地區：墨蘭迪綠 ===== */
+#gpsTab,
+#areaTab{
+  background:#DCE4DD !important;
+  color:#4F6257 !important;
+  border:1px solid #BFCBC2 !important;
+  box-shadow:none !important;
+  text-shadow:none !important;
+}
+#gpsTab.active,
+#areaTab.active{
+  background:#7F9889 !important;
+  color:#FFFFFF !important;
+  border-color:#718A7B !important;
+  box-shadow:0 5px 12px rgba(82,107,91,.18) !important;
+}
+
 </style>
 </head>
 <body>
