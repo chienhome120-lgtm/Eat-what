@@ -10,14 +10,46 @@
   --bg:#efe9df;--card:#fffaf3;--ink:#302c28;--muted:#766f68;--line:#ded2c5;
   --accent:#a86352;--green:#6f8b78;--sand:#d5b98d;--shadow:0 12px 34px rgba(55,45,35,.12);
 }
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);}
+body{
+  position:relative;
+  min-height:100vh;
+  background:#e9dfd2;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    linear-gradient(rgba(239,233,223,.68),rgba(239,233,223,.76)),
+    url("https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1800&q=85")
+    center center / cover no-repeat;
+  filter:saturate(.92) contrast(.96);
+  transform:scale(1.02);
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background:linear-gradient(
+    180deg,
+    rgba(255,250,243,.18) 0%,
+    rgba(239,233,223,.30) 55%,
+    rgba(239,233,223,.48) 100%
+  );
+  pointer-events:none;
+}
+
 font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Segoe UI",sans-serif}
 body{min-height:100vh}button,input,select{font:inherit}
 .app{max-width:780px;margin:auto;padding:14px 14px 38px}
-.hero{text-align:center;padding:14px 4px 8px}
+.hero{text-align:center;padding:14px 8px 10px;background:rgba(255,250,243,.32);border-radius:22px;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
 .hero h1{font-size:clamp(28px,8vw,44px);margin:0;font-weight:900}
 .hero p{margin:8px auto 0;color:var(--muted);line-height:1.6;max-width:620px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;margin:9px 0;box-shadow:var(--shadow)}
+.card{background:rgba(255,250,243,.90);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border:1px solid rgba(222,210,197,.90);border-radius:18px;padding:12px;margin:9px 0;box-shadow:var(--shadow)}
 .stepTitle{font-weight:900;font-size:18px;margin-bottom:10px}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 button{border:0;border-radius:14px;min-height:46px;padding:10px 14px;font-weight:850;cursor:pointer}
@@ -59,7 +91,7 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .actions a{text-decoration:none}
 .actions button{width:100%}
-.footer{text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:8px 14px}
+.footer{text-align:center;color:#5f5852;font-size:12px;line-height:1.6;padding:10px 14px;background:rgba(255,250,243,.38);border-radius:16px;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
 .badge{display:inline-block;background:#e6eee8;color:#3f6650;border-radius:99px;padding:5px 9px;font-size:12px;font-weight:800;margin-top:8px}
 @media(max-width:480px){
   .app{padding:10px 10px 28px}
@@ -116,7 +148,7 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
     </div>
 
     <div id="status" class="status">第一次使用不用設定任何東西，直接按上面的按鈕即可。</div>
-    <div class="tip">※ 免設定版使用 OpenStreetMap 公開地點資料，因此不會直接抓取 Google 星等／評論數；選中後可一鍵打開 Google Maps 查看最新評分、營業時間與導航。</div>
+    <div class="tip">※ 免設定版使用 OpenStreetMap 公開地點資料，因此不會直接抓取 Google 星等／評論數；選中後可一鍵打開 Google Maps 查看最新評分、營業時間與導航。地名搜尋已加入快速備援與逾時切換。</div>
   </section>
 
   <section id="placesCard" class="card hidden">
@@ -153,6 +185,24 @@ const $=s=>document.querySelector(s);
 const statusEl=$("#status"), placesCard=$("#placesCard"), wheelCard=$("#wheelCard");
 const listEl=$("#list"), countEl=$("#count"), wheel=$("#wheel"), resultEl=$("#result");
 let places=[], currentRotation=0, busy=false;
+
+function fetchWithTimeout(url, options={}, timeout=4500){
+  const controller=new AbortController();
+  const id=setTimeout(()=>controller.abort(),timeout);
+  return fetch(url,{...options,signal:controller.signal})
+    .finally(()=>clearTimeout(id));
+}
+
+async function firstSuccessful(tasks){
+  if(typeof Promise.any==="function") return Promise.any(tasks);
+  return new Promise((resolve,reject)=>{
+    let failed=0, lastErr;
+    tasks.forEach(p=>Promise.resolve(p).then(resolve).catch(e=>{
+      lastErr=e;
+      if(++failed===tasks.length) reject(lastErr);
+    }));
+  });
+}
 
 function setStatus(msg,type=""){
   statusEl.textContent=msg; statusEl.className="status "+(type||"");
@@ -292,41 +342,80 @@ $("#foodType").onchange=()=>{};
 async function searchArea(){
   const q=$("#areaInput").value.trim();
   if(!q){setStatus("請先輸入地區，例如：萬華龍山寺。","err");return}
+  if(busy) return;
+
+  setStatus(`正在快速定位「${q}」…`);
+  $("#areaBtn").disabled=true;
+
+  const nominatim=async()=>{
+    const u=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=tw&accept-language=zh-TW&q=${encodeURIComponent(q)}`;
+    const r=await fetchWithTimeout(u,{headers:{"Accept":"application/json"}},4200);
+    if(!r.ok) throw new Error("Nominatim");
+    const d=await r.json();
+    if(!d.length) throw new Error("not found");
+    return {lat:+d[0].lat,lon:+d[0].lon};
+  };
+
+  const photon=async()=>{
+    const u=`https://photon.komoot.io/api/?limit=1&lang=zh&q=${encodeURIComponent(q+", Taiwan")}`;
+    const r=await fetchWithTimeout(u,{headers:{"Accept":"application/json"}},4200);
+    if(!r.ok) throw new Error("Photon");
+    const d=await r.json();
+    const f=d?.features?.[0];
+    if(!f) throw new Error("not found");
+    return {lat:+f.geometry.coordinates[1],lon:+f.geometry.coordinates[0]};
+  };
+
   try{
-    setStatus("正在找這個地區的位置…");
-    const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=zh-TW&q=${encodeURIComponent(q)}`;
-    const r=await fetch(url,{headers:{"Accept":"application/json"}});
-    if(!r.ok) throw new Error();
-    const data=await r.json();
-    if(!data.length){setStatus("找不到這個地區，請換一個較明確的地名。","err");return}
-    await searchNearby(+data[0].lat,+data[0].lon);
-  }catch(e){setStatus("地區搜尋暫時無法使用，請稍後再試或改用手機定位。","err")}
+    const pos=await firstSuccessful([nominatim(),photon()]);
+    setStatus("已找到位置，正在抓附近美食…","ok");
+    await searchNearby(pos.lat,pos.lon,true);
+  }catch(e){
+    busy=false;
+    setStatus("地名定位逾時或找不到位置。建議輸入較完整名稱，例如「新北市板橋車站」。","err");
+  }finally{
+    $("#areaBtn").disabled=false;
+  }
 }
 
-async function searchNearby(lat,lon){
+async function searchNearby(lat,lon,fromArea=false){
   if(busy)return; busy=true;
   placesCard.classList.add("hidden");wheelCard.classList.add("hidden");resultEl.innerHTML="";
   const radius=+$("#radius").value, type=$("#foodType").value;
-  setStatus("正在搜尋附近餐廳與小吃…");
+  setStatus("正在快速搜尋附近餐廳與小吃…");
   const amenityFilter = type==="all" ? 'restaurant|fast_food|cafe|food_court' : type;
-  const q=`[out:json][timeout:18];
+  const q=`[out:json][timeout:7];
   (
     nwr["amenity"~"^(${amenityFilter})$"](around:${radius},${lat},${lon});
   );
-  out center tags;`;
+  out center tags 120;`;
   const endpoints=[
+    "https://overpass.kumi.systems/api/interpreter",
     "https://overpass-api.de/api/interpreter",
-    "https://overpass.kumi.systems/api/interpreter"
+    "https://overpass.nchc.org.tw/api/interpreter"
   ];
+
+  const requestOne=async(ep)=>{
+    const r=await fetchWithTimeout(ep,{
+      method:"POST",
+      headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
+      body:"data="+encodeURIComponent(q)
+    },6500);
+    if(!r.ok) throw new Error("overpass");
+    const d=await r.json();
+    if(!d || !Array.isArray(d.elements)) throw new Error("bad data");
+    return d;
+  };
+
   let data=null;
-  for(const ep of endpoints){
-    try{
-      const r=await fetch(ep,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"data="+encodeURIComponent(q)});
-      if(r.ok){data=await r.json();break}
-    }catch(e){}
-  }
+  try{
+    data=await firstSuccessful(endpoints.map(requestOne));
+  }catch(e){}
   busy=false;
-  if(!data){setStatus("免費地圖服務目前較忙，請再按一次搜尋。","err");return}
+  if(!data){
+    setStatus("附近店家搜尋逾時，免費地圖服務目前較忙。請再按一次，通常第二次會更快。","err");
+    return;
+  }
   const origin={lat,lon};
   const arr=(data.elements||[]).map(el=>{
     const t=el.tags||{}, plat=el.lat??el.center?.lat, plon=el.lon??el.center?.lon;
