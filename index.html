@@ -76,15 +76,15 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
 .mapmini{width:32px;height:32px;min-height:32px;padding:0;background:#e7efe9;color:#315943;border-radius:10px;display:grid;place-items:center;font-size:17px;line-height:1}
 .mapmini svg{width:17px;height:17px;display:block}
 .wheelCard{text-align:center}
-.pointer{width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:31px solid var(--accent);margin:0 auto -10px;position:relative;z-index:4;filter:drop-shadow(0 3px 2px rgba(0,0,0,.22))}
+.pointer{width:0;height:0;border-left:17px solid transparent;border-right:17px solid transparent;border-top:30px solid #b45f4d;margin:0 auto -7px;position:relative;z-index:6;filter:drop-shadow(0 4px 3px rgba(0,0,0,.28))}
 .stage{perspective:1100px;display:flex;justify-content:center;padding:8px 0 18px}
-.wheelWrap{width:min(88vw,520px);aspect-ratio:1;position:relative;transform:rotateX(14deg) rotateZ(0deg);transform-style:preserve-3d;filter:drop-shadow(0 24px 18px rgba(50,35,25,.24))}
-.wheelDepth{position:absolute;inset:2.5%;border-radius:50%;background:linear-gradient(180deg,#5d4636,#2f241d);transform:translateZ(-22px) translateY(18px);box-shadow:inset 0 -10px 16px rgba(0,0,0,.38),0 16px 20px rgba(0,0,0,.20)}
-.wheelRim{position:absolute;inset:-1.5%;border-radius:50%;background:conic-gradient(#f6e6bd,#8c6c3c,#f9eecb,#846235,#f7dca4,#6f522f,#f6e6bd);transform:translateZ(-5px);box-shadow:inset 0 0 0 8px rgba(255,255,255,.18),inset 0 -16px 18px rgba(67,42,18,.25)}
-#wheel{position:absolute;inset:2.5%;width:95%;height:95%;transition:transform 5.2s cubic-bezier(.08,.72,.08,1);filter:drop-shadow(0 8px 5px rgba(50,34,24,.20));transform-style:preserve-3d;backface-visibility:hidden}
-.wheelGlass{position:absolute;inset:4.5%;border-radius:50%;pointer-events:none;transform:translateZ(8px);background:radial-gradient(circle at 32% 23%,rgba(255,255,255,.36),rgba(255,255,255,.08) 28%,rgba(255,255,255,0) 53%),linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,0) 45%);box-shadow:inset 0 0 24px rgba(255,255,255,.18)}
-.hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateZ(16px);width:19%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff5d6 0 12%,#d6ad63 34%,#8f6333 68%,#52351e 100%);border:7px solid #f6e2b2;box-shadow:0 9px 18px rgba(0,0,0,.32),inset 0 3px 7px rgba(255,255,255,.55);display:grid;place-items:center;font-size:11px;font-weight:900;color:#fff;text-shadow:0 1px 2px #5f3c23}
-.pointer{filter:drop-shadow(0 5px 3px rgba(0,0,0,.32));transform:translateZ(30px)}
+.wheelWrap{width:min(86vw,500px);aspect-ratio:1;position:relative;transform:rotateX(10deg);transform-style:preserve-3d;filter:drop-shadow(0 24px 24px rgba(45,32,25,.28))}
+.wheelDepth{position:absolute;inset:3%;border-radius:50%;background:linear-gradient(180deg,#6c513c 0%,#3a2a21 55%,#211914 100%);transform:translateZ(-20px) translateY(15px);box-shadow:inset 0 -12px 16px rgba(0,0,0,.42),0 15px 24px rgba(0,0,0,.24)}
+.wheelRim{position:absolute;inset:-1%;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff4c9 0 5%,#d8bd7b 22%,#937040 58%,#5d4329 100%);transform:translateZ(-4px);box-shadow:inset 0 0 0 5px rgba(255,255,255,.28),inset 0 0 0 12px rgba(113,78,39,.22),inset 0 -15px 20px rgba(43,28,17,.32)}
+#wheel{position:absolute;inset:3%;width:94%;height:94%;transition:transform 5.2s cubic-bezier(.08,.72,.08,1);filter:drop-shadow(0 7px 6px rgba(50,34,24,.18));transform-style:preserve-3d;backface-visibility:hidden}
+.wheelGlass{position:absolute;inset:5%;border-radius:50%;pointer-events:none;transform:translateZ(10px);background:radial-gradient(circle at 32% 22%,rgba(255,255,255,.30),rgba(255,255,255,.08) 28%,rgba(255,255,255,0) 51%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.26),inset 0 0 26px rgba(255,255,255,.16)}
+.hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateZ(18px);width:18%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff8dc 0 10%,#e2c47f 28%,#a8783f 60%,#624326 100%);border:5px solid #f7e8bb;box-shadow:0 8px 16px rgba(0,0,0,.30),inset 0 3px 7px rgba(255,255,255,.58);display:grid;place-items:center;font-size:11px;font-weight:900;color:#fff;text-shadow:0 1px 2px #5f3c23}
+.pointer{filter:drop-shadow(0 5px 4px rgba(0,0,0,.34));transform:translateZ(32px)}
 .spin{margin-top:12px;max-width:520px}
 .result{margin-top:12px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px}
 .result h2{margin:0 0 7px;font-size:23px}.result p{margin:6px 0;color:var(--muted);line-height:1.5}
@@ -160,6 +160,7 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
 
   <section id="wheelCard" class="card wheelCard hidden">
     <div class="stepTitle">③ 不想選？讓命運幫你決定</div>
+    <div style="font-size:11px;color:var(--muted);margin:-2px 0 6px">轉盤只顯示店名第一個字，完整店名會在中獎後顯示。</div>
     <div class="pointer"></div>
     <div class="stage">
       <div class="wheelWrap">
@@ -492,17 +493,29 @@ function wedgePath(start,end){
 }
 function drawWheel(){
   const n=places.length, step=360/n;
-  const colors=["#cf8872","#7f9d88","#d8b47d","#9a8396","#7598a3","#c9956a","#8f9b72","#bc7776","#7f879d","#b1a476"];
+  const colors=["#bd6d64","#839d7f","#d09d69","#8a7890","#6f929a","#c88761","#87926d","#b86f70","#737c94","#aa9864"];
   let svg="";
   places.forEach((p,i)=>{
     const s=-90+i*step,e=s+step,mid=s+step/2;
-    const [tx,ty]=polar(250,250,150,mid);
-    const max=10, label=p.name.length>max?p.name.slice(0,max)+"…":p.name;
-    const rot=mid+90;
-    svg+=`<path d="${wedgePath(s,e)}" fill="${colors[i%colors.length]}" stroke="#fff8ed" stroke-width="3"/>`;
-    svg+=`<text x="${tx}" y="${ty}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${rot} ${tx} ${ty})" fill="white" font-size="${n>8?14:16}" font-weight="850">${esc(label)}</text>`;
+    const [tx,ty]=polar(250,250,160,mid);
+    const firstChar=(p.name||"?").trim().charAt(0) || "?";
+    svg+=`<path d="${wedgePath(s,e)}" fill="${colors[i%colors.length]}" stroke="rgba(255,250,240,.96)" stroke-width="4"/>`;
+    svg+=`<path d="${wedgePath(s,e)}" fill="url(#segmentLight)" opacity=".16"/>`;
+    svg+=`<text x="${tx}" y="${ty}" text-anchor="middle" dominant-baseline="middle"
+      fill="#fffdf7" font-size="${n>8?29:32}" font-weight="900"
+      stroke="rgba(44,31,24,.28)" stroke-width="1.4" paint-order="stroke"
+      style="text-shadow:0 2px 3px rgba(0,0,0,.3)">${esc(firstChar)}</text>`;
   });
-  svg+=`<circle cx="250" cy="250" r="237" fill="none" stroke="#fff7e9" stroke-width="8"/>`;
+  svg=`
+    <defs>
+      <radialGradient id="segmentLight" cx="32%" cy="24%" r="78%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="38%" stop-color="#ffffff" stop-opacity=".28"/>
+        <stop offset="100%" stop-color="#000000" stop-opacity=".20"/>
+      </radialGradient>
+    </defs>`+svg;
+  svg+=`<circle cx="250" cy="250" r="237" fill="none" stroke="#fff8e8" stroke-width="8"/>`;
+  svg+=`<circle cx="250" cy="250" r="226" fill="none" stroke="rgba(84,57,34,.22)" stroke-width="2"/>`;
   wheel.innerHTML=svg;
 }
 $("#spinBtn").onclick=()=>{
