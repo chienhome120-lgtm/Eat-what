@@ -40,7 +40,7 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
 .item.hasSite:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(58,45,34,.14)}
 .siteHint{font-size:10px;color:#6f8b78;font-weight:800;margin-top:2px}
 .rank{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#eee4d8;font-weight:900;font-size:12px}
-.item b{display:block;font-size:14px;line-height:1.25}.item small{display:block;color:var(--muted);margin-top:2px;font-size:11px;line-height:1.3}
+.item b{display:block;font-size:14px;line-height:1.25}.storeName{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}.storeName:active{opacity:.65}.item small{display:block;color:var(--muted);margin-top:2px;font-size:11px;line-height:1.3}
 .mapmini{width:32px;height:32px;min-height:32px;padding:0;background:#e7efe9;color:#315943;border-radius:10px;display:grid;place-items:center;font-size:17px;line-height:1}
 .mapmini svg{width:17px;height:17px;display:block}
 .wheelCard{text-align:center}
@@ -167,6 +167,27 @@ function distanceM(a,b){
 function mapUrl(p){
   const q=encodeURIComponent(`${p.name} ${p.lat},${p.lon}`);
   return `https://www.google.com/maps/search/?api=1&query=${q}`;
+}
+function googleSearchUrl(p){
+  const area=[p.tags?.["addr:district"],p.tags?.["addr:suburb"],p.tags?.["addr:city"]].filter(Boolean).join(" ");
+  const q=encodeURIComponent(`${p.name}${area?" "+area:""}`);
+  return `https://www.google.com/search?q=${q}`;
+}
+async function copyAndGoogleSearch(p){
+  const name=p.name;
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(name);
+    }else{
+      const ta=document.createElement("textarea");
+      ta.value=name;ta.style.position="fixed";ta.style.opacity="0";
+      document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
+    }
+    setStatus(`已複製「${name}」，正在開啟 Google 搜尋…`,"ok");
+  }catch(e){
+    setStatus(`正在開啟 Google 搜尋「${name}」…`,"ok");
+  }
+  window.open(googleSearchUrl(p),"_blank","noopener");
 }
 function phoneOf(tags={}){return tags.phone||tags["contact:phone"]||tags["contact:mobile"]||""}
 function websiteOf(tags={}){
@@ -336,14 +357,14 @@ async function searchNearby(lat,lon){
 }
 
 function renderList(){
-  countEl.textContent=`依距離與公開資料完整度，挑出 ${places.length} 家候選。點有「官網」標示的店家字卡，可直接開啟官方網站。`;
+  countEl.textContent=`依距離與公開資料完整度，挑出 ${places.length} 家候選。點店名＝複製名稱＋Google 搜尋；有官網的字卡仍可直接開官網。`;
   listEl.innerHTML=places.map((p,i)=>{
     const site=websiteOf(p.tags);
     return `
     <div class="item ${site?"hasSite":""}" ${site?`data-site="${esc(site)}"`:""}>
       <div class="rank">${i+1}</div>
       <div>
-        <b>${esc(p.name)}</b>
+        <b class="storeName" data-index="${i}" title="點一下：複製店名並用 Google 搜尋">${esc(p.name)}</b>
         <small>${Math.round(p.dist)} 公尺・${esc(cuisineOf(p.tags))}${phoneOf(p.tags)?"・有電話":""}</small>
         <div class="siteHint">${site?"🌐 點字卡開啟店家官網":"尚無公開官網資料"}</div>
       </div>
@@ -358,6 +379,14 @@ function renderList(){
   }).join("");
   document.querySelectorAll(".item.hasSite").forEach(el=>{
     el.addEventListener("click",()=>window.open(el.dataset.site,"_blank","noopener"));
+  });
+  document.querySelectorAll(".storeName").forEach(el=>{
+    el.addEventListener("click",e=>{
+      e.stopPropagation();
+      e.preventDefault();
+      const p=places[Number(el.dataset.index)];
+      if(p) copyAndGoogleSearch(p);
+    });
   });
 }
 function polar(cx,cy,r,a){const x=cx+r*Math.cos(rad(a)),y=cy+r*Math.sin(rad(a));return[x,y]}
