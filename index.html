@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#efe9df">
+<title>今天吃什麼？免設定美食大轉盤</title>
+<style>
+:root{
+  --bg:#efe9df;--card:#fffaf3;--ink:#302c28;--muted:#766f68;--line:#ded2c5;
+  --accent:#a86352;--green:#6f8b78;--sand:#d5b98d;--shadow:0 12px 34px rgba(55,45,35,.12);
+}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);
+font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Segoe UI",sans-serif}
+body{min-height:100vh}button,input,select{font:inherit}
+.app{max-width:780px;margin:auto;padding:14px 14px 38px}
+.hero{text-align:center;padding:14px 4px 8px}
+.hero h1{font-size:clamp(28px,8vw,44px);margin:0;font-weight:900}
+.hero p{margin:8px auto 0;color:var(--muted);line-height:1.6;max-width:620px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:15px;margin:12px 0;box-shadow:var(--shadow)}
+.stepTitle{font-weight:900;font-size:18px;margin-bottom:10px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+button{border:0;border-radius:14px;min-height:46px;padding:10px 14px;font-weight:850;cursor:pointer}
+.tab{background:#e9e0d5;color:var(--ink)}.tab.active{background:var(--green);color:white}
+.primary{background:var(--accent);color:#fff;width:100%;font-size:17px}
+.secondary{background:var(--green);color:#fff}
+.ghost{background:#ebe3d9;color:var(--ink)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.row{display:grid;grid-template-columns:1fr auto;gap:8px}
+input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:white;color:var(--ink)}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.tip{font-size:13px;color:var(--muted);line-height:1.55;margin-top:10px}
+.status{min-height:24px;margin-top:10px;font-size:14px;color:var(--muted)}
+.status.ok{color:#3d775d}.status.err{color:#a23f38}
+.hidden{display:none!important}
+.count{font-size:14px;color:var(--muted);margin:6px 0 0}
+.list{display:grid;gap:8px;margin-top:10px}
+.item{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:15px;background:#fff}
+.rank{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#eee4d8;font-weight:900}
+.item b{display:block}.item small{display:block;color:var(--muted);margin-top:3px}
+.mapmini{min-height:38px;padding:8px 10px;background:#e7efe9;color:#315943}
+.wheelCard{text-align:center}
+.pointer{width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:31px solid var(--accent);margin:0 auto -10px;position:relative;z-index:4;filter:drop-shadow(0 3px 2px rgba(0,0,0,.22))}
+.stage{perspective:950px;display:flex;justify-content:center}
+.wheelWrap{width:min(88vw,520px);aspect-ratio:1;position:relative;transform:rotateX(8deg);transform-style:preserve-3d}
+.wheelWrap:after{content:"";position:absolute;inset:6%;border-radius:50%;background:rgba(75,57,46,.25);transform:translateY(17px);filter:blur(9px);z-index:-1}
+#wheel{width:100%;height:100%;transition:transform 5.2s cubic-bezier(.12,.68,.12,1);filter:drop-shadow(0 12px 8px rgba(72,52,42,.18))}
+.hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:18%;aspect-ratio:1;border-radius:50%;background:linear-gradient(#f9ead6,#c8a979);border:6px solid #fff6e8;box-shadow:0 5px 15px rgba(0,0,0,.2);display:grid;place-items:center;font-size:11px;font-weight:900}
+.spin{margin-top:12px;max-width:520px}
+.result{margin-top:12px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px}
+.result h2{margin:0 0 7px;font-size:23px}.result p{margin:6px 0;color:var(--muted);line-height:1.5}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.actions a{text-decoration:none}
+.actions button{width:100%}
+.footer{text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:8px 14px}
+.badge{display:inline-block;background:#e6eee8;color:#3f6650;border-radius:99px;padding:5px 9px;font-size:12px;font-weight:800;margin-top:8px}
+@media(max-width:480px){.filters{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.item{grid-template-columns:34px 1fr}.mapmini{grid-column:2}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <h1>🍜 今天吃什麼？</h1>
+    <p>不用申請帳號、不用 Google API Key。選擇定位或輸入地區，直接找附近美食，再交給命運大轉盤。</p>
+    <span class="badge">開啟就能用・零設定</span>
+  </header>
+
+  <section class="card">
+    <div class="stepTitle">① 要去哪裡吃？</div>
+    <div class="tabs">
+      <button id="gpsTab" class="tab active">📍 用手機定位</button>
+      <button id="areaTab" class="tab">⌨️ 自己輸入地區</button>
+    </div>
+
+    <div id="gpsPane">
+      <button id="gpsBtn" class="primary">搜尋我附近的美食</button>
+    </div>
+
+    <div id="areaPane" class="hidden">
+      <div class="row">
+        <input id="areaInput" placeholder="例如：萬華龍山寺、板橋車站、高雄巨蛋">
+        <button id="areaBtn" class="secondary">搜尋</button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <select id="radius">
+        <option value="600">附近 600 公尺</option>
+        <option value="1200" selected>附近 1.2 公里</option>
+        <option value="2000">附近 2 公里</option>
+        <option value="3500">附近 3.5 公里</option>
+      </select>
+      <select id="foodType">
+        <option value="all">全部美食</option>
+        <option value="restaurant">餐廳</option>
+        <option value="fast_food">小吃 / 速食</option>
+        <option value="cafe">咖啡 / 輕食</option>
+      </select>
+    </div>
+
+    <div id="status" class="status">第一次使用不用設定任何東西，直接按上面的按鈕即可。</div>
+    <div class="tip">※ 免設定版使用 OpenStreetMap 公開地點資料，因此不會直接抓取 Google 星等／評論數；選中後可一鍵打開 Google Maps 查看最新評分、營業時間與導航。</div>
+  </section>
+
+  <section id="placesCard" class="card hidden">
+    <div class="stepTitle">② 找到的推薦美食</div>
+    <div id="count" class="count"></div>
+    <div id="list" class="list"></div>
+  </section>
+
+  <section id="wheelCard" class="card wheelCard hidden">
+    <div class="stepTitle">③ 不想選？讓命運幫你決定</div>
+    <div class="pointer"></div>
+    <div class="stage">
+      <div class="wheelWrap">
+        <svg id="wheel" viewBox="0 0 500 500" aria-label="美食轉盤"></svg>
+        <div class="hub">今天<br>吃它</div>
+      </div>
+    </div>
+    <button id="spinBtn" class="primary spin">🎯 開始旋轉</button>
+    <div id="result"></div>
+  </section>
+
+  <div class="footer">
+    地點資料 © OpenStreetMap contributors。搜尋服務使用 Nominatim / Overpass 公開服務。<br>
+    本工具不儲存你的 GPS 位置。
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const statusEl=$("#status"), placesCard=$("#placesCard"), wheelCard=$("#wheelCard");
+const listEl=$("#list"), countEl=$("#count"), wheel=$("#wheel"), resultEl=$("#result");
+let places=[], currentRotation=0, busy=false;
+
+function setStatus(msg,type=""){
+  statusEl.textContent=msg; statusEl.className="status "+(type||"");
+}
+function esc(s=""){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+function rad(x){return x*Math.PI/180}
+function distanceM(a,b){
+  const R=6371000, dLat=rad(b.lat-a.lat), dLon=rad(b.lon-a.lon);
+  const q=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(q));
+}
+function mapUrl(p){
+  const q=encodeURIComponent(`${p.name} ${p.lat},${p.lon}`);
+  return `https://www.google.com/maps/search/?api=1&query=${q}`;
+}
+function phoneOf(tags={}){return tags.phone||tags["contact:phone"]||tags["contact:mobile"]||""}
+function cuisineOf(tags={}){
+  const c=(tags.cuisine||"").replaceAll(";","、").replaceAll("_"," ");
+  return c || ({restaurant:"餐廳",fast_food:"小吃 / 速食",cafe:"咖啡 / 輕食",food_court:"美食廣場"}[tags.amenity]||"美食");
+}
+function buildAddress(t={}){
+  return [t["addr:street"],t["addr:housenumber"],t["addr:district"]||t["addr:suburb"]].filter(Boolean).join(" ");
+}
+
+$("#gpsTab").onclick=()=>{
+  $("#gpsTab").classList.add("active");$("#areaTab").classList.remove("active");
+  $("#gpsPane").classList.remove("hidden");$("#areaPane").classList.add("hidden");
+};
+$("#areaTab").onclick=()=>{
+  $("#areaTab").classList.add("active");$("#gpsTab").classList.remove("active");
+  $("#areaPane").classList.remove("hidden");$("#gpsPane").classList.add("hidden");
+};
+$("#gpsBtn").onclick=()=>{
+  if(!navigator.geolocation){setStatus("這台裝置不支援定位，請改用「自己輸入地區」。","err");return}
+  setStatus("正在取得你的定位…");
+  navigator.geolocation.getCurrentPosition(
+    pos=>searchNearby(pos.coords.latitude,pos.coords.longitude),
+    ()=>setStatus("無法取得定位。請允許瀏覽器定位權限，或改用「自己輸入地區」。","err"),
+    {enableHighAccuracy:true,timeout:10000,maximumAge:60000}
+  );
+};
+$("#areaBtn").onclick=searchArea;
+$("#areaInput").addEventListener("keydown",e=>{if(e.key==="Enter")searchArea()});
+$("#foodType").onchange=()=>{};
+
+async function searchArea(){
+  const q=$("#areaInput").value.trim();
+  if(!q){setStatus("請先輸入地區，例如：萬華龍山寺。","err");return}
+  try{
+    setStatus("正在找這個地區的位置…");
+    const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=zh-TW&q=${encodeURIComponent(q)}`;
+    const r=await fetch(url,{headers:{"Accept":"application/json"}});
+    if(!r.ok) throw new Error();
+    const data=await r.json();
+    if(!data.length){setStatus("找不到這個地區，請換一個較明確的地名。","err");return}
+    await searchNearby(+data[0].lat,+data[0].lon);
+  }catch(e){setStatus("地區搜尋暫時無法使用，請稍後再試或改用手機定位。","err")}
+}
+
+async function searchNearby(lat,lon){
+  if(busy)return; busy=true;
+  placesCard.classList.add("hidden");wheelCard.classList.add("hidden");resultEl.innerHTML="";
+  const radius=+$("#radius").value, type=$("#foodType").value;
+  setStatus("正在搜尋附近餐廳與小吃…");
+  const amenityFilter = type==="all" ? 'restaurant|fast_food|cafe|food_court' : type;
+  const q=`[out:json][timeout:18];
+  (
+    nwr["amenity"~"^(${amenityFilter})$"](around:${radius},${lat},${lon});
+  );
+  out center tags;`;
+  const endpoints=[
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter"
+  ];
+  let data=null;
+  for(const ep of endpoints){
+    try{
+      const r=await fetch(ep,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:"data="+encodeURIComponent(q)});
+      if(r.ok){data=await r.json();break}
+    }catch(e){}
+  }
+  busy=false;
+  if(!data){setStatus("免費地圖服務目前較忙，請再按一次搜尋。","err");return}
+  const origin={lat,lon};
+  const arr=(data.elements||[]).map(el=>{
+    const t=el.tags||{}, plat=el.lat??el.center?.lat, plon=el.lon??el.center?.lon;
+    if(!plat||!plon)return null;
+    const name=t["name:zh"]||t.name||t.brand;
+    if(!name)return null;
+    const dist=distanceM(origin,{lat:plat,lon:plon});
+    const completeness=(phoneOf(t)?8:0)+(t.opening_hours?5:0)+(t.cuisine?4:0)+(buildAddress(t)?3:0)+(t.website||t["contact:website"]?2:0);
+    const score=Math.max(0,100-dist/30)+completeness;
+    return {id:`${el.type}-${el.id}`,name,lat:plat,lon:plon,dist,tags:t,score};
+  }).filter(Boolean);
+
+  const uniq=[]; const seen=new Set();
+  arr.sort((a,b)=>b.score-a.score);
+  for(const p of arr){
+    const key=p.name.toLowerCase().replace(/\s/g,"");
+    if(seen.has(key))continue;
+    seen.add(key);uniq.push(p);
+    if(uniq.length===10)break;
+  }
+  places=uniq;
+  if(!places.length){
+    setStatus("附近沒有找到有名稱的餐廳資料。可以把搜尋範圍調大後再試一次。","err");return;
+  }
+  setStatus(`找到 ${places.length} 家，已經可以轉盤抽選了！`,"ok");
+  renderList();drawWheel();placesCard.classList.remove("hidden");wheelCard.classList.remove("hidden");
+  setTimeout(()=>placesCard.scrollIntoView({behavior:"smooth",block:"start"}),100);
+}
+
+function renderList(){
+  countEl.textContent=`依距離與公開資料完整度，挑出 ${places.length} 家候選。`;
+  listEl.innerHTML=places.map((p,i)=>`
+    <div class="item">
+      <div class="rank">${i+1}</div>
+      <div>
+        <b>${esc(p.name)}</b>
+        <small>${Math.round(p.dist)} 公尺・${esc(cuisineOf(p.tags))}${phoneOf(p.tags)?"・有電話":""}</small>
+      </div>
+      <a href="${mapUrl(p)}" target="_blank" rel="noopener"><button class="mapmini">地圖</button></a>
+    </div>`).join("");
+}
+function polar(cx,cy,r,a){const x=cx+r*Math.cos(rad(a)),y=cy+r*Math.sin(rad(a));return[x,y]}
+function wedgePath(start,end){
+  const [x1,y1]=polar(250,250,235,start),[x2,y2]=polar(250,250,235,end);
+  return `M250 250 L${x1} ${y1} A235 235 0 ${end-start>180?1:0} 1 ${x2} ${y2} Z`;
+}
+function drawWheel(){
+  const n=places.length, step=360/n;
+  const colors=["#cf8872","#7f9d88","#d8b47d","#9a8396","#7598a3","#c9956a","#8f9b72","#bc7776","#7f879d","#b1a476"];
+  let svg="";
+  places.forEach((p,i)=>{
+    const s=-90+i*step,e=s+step,mid=s+step/2;
+    const [tx,ty]=polar(250,250,150,mid);
+    const max=10, label=p.name.length>max?p.name.slice(0,max)+"…":p.name;
+    const rot=mid+90;
+    svg+=`<path d="${wedgePath(s,e)}" fill="${colors[i%colors.length]}" stroke="#fff8ed" stroke-width="3"/>`;
+    svg+=`<text x="${tx}" y="${ty}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${rot} ${tx} ${ty})" fill="white" font-size="${n>8?14:16}" font-weight="850">${esc(label)}</text>`;
+  });
+  svg+=`<circle cx="250" cy="250" r="237" fill="none" stroke="#fff7e9" stroke-width="8"/>`;
+  wheel.innerHTML=svg;
+}
+$("#spinBtn").onclick=()=>{
+  if(!places.length||busy)return;
+  busy=true;$("#spinBtn").disabled=true;resultEl.innerHTML="";
+  const n=places.length, idx=Math.floor(Math.random()*n), step=360/n;
+  const target=-(idx*step+step/2);
+  const extra=360*(5+Math.floor(Math.random()*3));
+  const normalized=((currentRotation%360)+360)%360;
+  const desired=((target%360)+360)%360;
+  const delta=(desired-normalized+360)%360;
+  currentRotation+=extra+delta;
+  wheel.style.transform=`rotate(${currentRotation}deg)`;
+  setTimeout(()=>{showWinner(places[idx]);busy=false;$("#spinBtn").disabled=false},5300);
+};
+function showWinner(p){
+  const phone=phoneOf(p.tags), addr=buildAddress(p.tags);
+  resultEl.innerHTML=`
+    <div class="result">
+      <div style="font-size:14px;color:#a86352;font-weight:900">🎉 命運指定</div>
+      <h2>${esc(p.name)}</h2>
+      <p>🍴 ${esc(cuisineOf(p.tags))}　📍 約 ${Math.round(p.dist)} 公尺</p>
+      ${addr?`<p>地址：${esc(addr)}</p>`:""}
+      <p>電話：${phone?`<a href="tel:${esc(phone)}">${esc(phone)}</a>`:"公開地圖資料未提供，可到 Google Maps 查看"}</p>
+      <div class="actions">
+        <a href="${mapUrl(p)}" target="_blank" rel="noopener"><button class="secondary">🗺️ Google Maps 導航</button></a>
+        <button class="ghost" onclick="document.querySelector('#spinBtn').click()">🙈 不想吃，再轉一次</button>
+      </div>
+    </div>`;
+  resultEl.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+</script>
+</body>
+</html>
