@@ -104,6 +104,158 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
   .stepTitle{font-size:16px;margin-bottom:7px}
   .list{gap:6px;margin-top:7px}
 }
+
+/* ===== 鮮豔主題覆寫：只改視覺，不動功能 ===== */
+:root{
+  --accent:#ff5a36 !important;
+  --accent2:#ffb300 !important;
+  --ink:#2b1b18 !important;
+  --muted:#735f5b !important;
+  --card:rgba(255,255,255,.88) !important;
+}
+body::before{
+  filter:saturate(1.35) contrast(1.06) brightness(1.02) !important;
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background:
+    radial-gradient(circle at 15% 12%,rgba(255,235,59,.25),transparent 28%),
+    radial-gradient(circle at 88% 16%,rgba(255,64,129,.18),transparent 28%),
+    radial-gradient(circle at 78% 85%,rgba(0,188,212,.16),transparent 32%),
+    linear-gradient(180deg,rgba(255,248,240,.18),rgba(255,244,230,.26));
+}
+.hero,.panel,.wheelCard,.resultCard,.winner,.card{
+  background:rgba(255,255,255,.90) !important;
+  border-color:rgba(255,138,76,.34) !important;
+  box-shadow:0 10px 30px rgba(118,60,40,.16) !important;
+}
+.hero{
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.94),rgba(255,244,220,.92)) !important;
+}
+.hero h1,.title,.stepTitle{
+  color:#3d1f1b !important;
+  text-shadow:0 1px 0 rgba(255,255,255,.8);
+}
+.badge,.pill,.tag{
+  background:linear-gradient(135deg,#ff7043,#ffca28) !important;
+  color:white !important;
+  border:none !important;
+  box-shadow:0 5px 12px rgba(255,99,71,.22);
+}
+button,.primaryBtn,#gpsBtn,#areaBtn,#spinBtn{
+  background:linear-gradient(135deg,#ff4f3a 0%,#ff7a2f 52%,#ffb300 100%) !important;
+  color:#fff !important;
+  border:none !important;
+  box-shadow:0 8px 18px rgba(255,83,48,.28) !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.18);
+}
+button:active,.primaryBtn:active,#gpsBtn:active,#areaBtn:active,#spinBtn:active{
+  transform:translateY(1px) scale(.99);
+}
+.tab.active{
+  background:linear-gradient(135deg,#ff7043,#ffb300) !important;
+  color:#fff !important;
+  box-shadow:0 5px 14px rgba(255,122,47,.23);
+}
+input,select{
+  background:rgba(255,255,255,.95) !important;
+  border:1.5px solid rgba(255,122,47,.40) !important;
+}
+.storeCard{
+  background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(255,247,235,.94)) !important;
+  border-color:rgba(255,145,77,.32) !important;
+}
+.rank{
+  background:linear-gradient(135deg,#ff5b45,#ffb300) !important;
+  color:#fff !important;
+  box-shadow:0 4px 10px rgba(255,89,69,.22);
+}
+.mapBtn{
+  background:linear-gradient(135deg,#00bfa5,#26c6da) !important;
+  color:#fff !important;
+  box-shadow:0 5px 12px rgba(0,188,170,.20);
+}
+.storeName{
+  color:#2d211e !important;
+  text-decoration-color:#ff6b4a !important;
+}
+.status.ok{
+  color:#087f5b !important;
+}
+.status.err{
+  color:#c62828 !important;
+}
+.pointer{
+  border-top-color:#ff3d2e !important;
+  filter:drop-shadow(0 5px 5px rgba(164,48,36,.34)) !important;
+}
+.wheelRim{
+  background:linear-gradient(145deg,#fff39a,#ffc107 34%,#ff8f00 64%,#e65100) !important;
+  box-shadow:
+    inset 0 0 0 7px rgba(255,255,255,.35),
+    inset 0 -10px 16px rgba(147,78,0,.24),
+    0 0 22px rgba(255,193,7,.24) !important;
+}
+.hub{
+  background:radial-gradient(circle at 35% 28%,#fffde7 0 9%,#ffd54f 30%,#ff9800 64%,#bf5b00 100%) !important;
+  border-color:#fff1a6 !important;
+}
+
+
+/* ===== 指定按鈕恢復原色調 ===== */
+#gpsTab,
+#areaTab,
+#areaBtn{
+  background:var(--soft,#f3e9df) !important;
+  color:var(--ink,#2b1b18) !important;
+  border:1px solid rgba(120,90,70,.18) !important;
+  box-shadow:none !important;
+  text-shadow:none !important;
+}
+#gpsTab.active,
+#areaTab.active{
+  background:var(--accent,#b96855) !important;
+  color:#fff !important;
+  box-shadow:0 4px 10px rgba(90,60,45,.14) !important;
+}
+#areaBtn{
+  background:#b96855 !important;
+  color:#fff !important;
+}
+
+
+/* ===== 三個主要操作按鈕：墨蘭迪色系 ===== */
+#gpsTab,
+#areaTab{
+  background:#E8E2DC !important;
+  color:#514944 !important;
+  border:1px solid #D4CBC3 !important;
+  box-shadow:none !important;
+  text-shadow:none !important;
+}
+#gpsTab.active,
+#areaTab.active{
+  background:#83958A !important; /* 墨蘭迪灰綠 */
+  color:#FFFFFF !important;
+  border-color:#83958A !important;
+  box-shadow:0 4px 10px rgba(80,95,86,.16) !important;
+}
+#areaBtn{
+  background:#9A7F78 !important; /* 墨蘭迪灰豆沙 */
+  color:#FFFFFF !important;
+  border:1px solid #90766F !important;
+  box-shadow:0 5px 12px rgba(105,82,76,.16) !important;
+  text-shadow:none !important;
+}
+#areaBtn:active{
+  background:#88706A !important;
+}
+
 </style>
 </head>
 <body>
@@ -159,7 +311,7 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
   </section>
 
   <section id="wheelCard" class="card wheelCard hidden">
-    <div class="stepTitle">③ 不想選？讓命運幫你決定</div><div style="font-size:11px;color:var(--muted);margin:-2px 0 6px">轉盤只顯示店名第一個字，中獎後顯示完整店名。</div>
+    <div class="stepTitle">③ 不想選？讓命運幫你決定</div><div style="font-size:11px;color:var(--muted);margin:-2px 0 6px">轉盤顯示店名前三個字，中獎後顯示完整店名。</div>
     <div class="pointer"></div>
     <div class="stage">
       <div class="wheelWrap">
@@ -544,15 +696,15 @@ function wedgePath(start,end){
 }
 function drawWheel(){
   const n=places.length, step=360/n;
-  const colors=["#bd7168","#829b82","#d09b67","#8e7b91","#71939b","#c88761","#899571","#b96f70","#778097","#ad9a68"];
+  const colors=["#ff5a5f","#2fbf71","#ff9f1c","#9b5de5","#00b4d8","#f15bb5","#8ac926","#ff6b35","#4361ee","#f6bd60"];
   let svg="";
   places.forEach((p,i)=>{
     const s=-90+i*step,e=s+step,mid=s+step/2;
     const [tx,ty]=polar(250,250,160,mid);
-    const label=(p.name||"?").trim().charAt(0)||"?";
+    const label=(p.name||"?").trim().slice(0,3)||"?";
     svg+=`<path d="${wedgePath(s,e)}" fill="${colors[i%colors.length]}" stroke="#fff8ed" stroke-width="4"/>`;
     svg+=`<text x="${tx}" y="${ty}" text-anchor="middle" dominant-baseline="middle"
-      fill="#fffdf8" font-size="${n>8?30:33}" font-weight="900"
+      fill="#fffdf8" font-size="${n>8?19:22}" font-weight="900"
       stroke="rgba(60,40,30,.30)" stroke-width="1.2" paint-order="stroke">${esc(label)}</text>`;
   });
   svg+=`<circle cx="250" cy="250" r="237" fill="none" stroke="#fff7e9" stroke-width="8"/>`;
