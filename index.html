@@ -17,7 +17,7 @@ body{min-height:100vh}button,input,select{font:inherit}
 .hero{text-align:center;padding:14px 4px 8px}
 .hero h1{font-size:clamp(28px,8vw,44px);margin:0;font-weight:900}
 .hero p{margin:8px auto 0;color:var(--muted);line-height:1.6;max-width:620px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:15px;margin:12px 0;box-shadow:var(--shadow)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;margin:9px 0;box-shadow:var(--shadow)}
 .stepTitle{font-weight:900;font-size:18px;margin-bottom:10px}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 button{border:0;border-radius:14px;min-height:46px;padding:10px 14px;font-weight:850;cursor:pointer}
@@ -35,13 +35,14 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
 .hidden{display:none!important}
 .count{font-size:14px;color:var(--muted);margin:6px 0 0}
 .list{display:grid;gap:8px;margin-top:10px}
-.item{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#fff,#f7efe5);box-shadow:0 5px 14px rgba(58,45,34,.08);transition:.18s transform,.18s box-shadow;cursor:pointer}
+.item{display:grid;grid-template-columns:30px 1fr 34px;gap:7px;align-items:center;padding:7px 8px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(145deg,#fff,#f7efe5);box-shadow:0 3px 10px rgba(58,45,34,.07);transition:.18s transform,.18s box-shadow;cursor:pointer}
 .item:active{transform:scale(.985)}
 .item.hasSite:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(58,45,34,.14)}
-.siteHint{font-size:11px;color:#6f8b78;font-weight:800;margin-top:4px}
-.rank{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#eee4d8;font-weight:900}
-.item b{display:block}.item small{display:block;color:var(--muted);margin-top:3px}
-.mapmini{min-height:38px;padding:8px 10px;background:#e7efe9;color:#315943}
+.siteHint{font-size:10px;color:#6f8b78;font-weight:800;margin-top:2px}
+.rank{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#eee4d8;font-weight:900;font-size:12px}
+.item b{display:block;font-size:14px;line-height:1.25}.item small{display:block;color:var(--muted);margin-top:2px;font-size:11px;line-height:1.3}
+.mapmini{width:32px;height:32px;min-height:32px;padding:0;background:#e7efe9;color:#315943;border-radius:10px;display:grid;place-items:center;font-size:17px;line-height:1}
+.mapmini svg{width:17px;height:17px;display:block}
 .wheelCard{text-align:center}
 .pointer{width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:31px solid var(--accent);margin:0 auto -10px;position:relative;z-index:4;filter:drop-shadow(0 3px 2px rgba(0,0,0,.22))}
 .stage{perspective:1100px;display:flex;justify-content:center;padding:8px 0 18px}
@@ -60,7 +61,17 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
 .actions button{width:100%}
 .footer{text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:8px 14px}
 .badge{display:inline-block;background:#e6eee8;color:#3f6650;border-radius:99px;padding:5px 9px;font-size:12px;font-weight:800;margin-top:8px}
-@media(max-width:480px){.filters{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.item{grid-template-columns:34px 1fr}.mapmini{grid-column:2}}
+@media(max-width:480px){
+  .app{padding:10px 10px 28px}
+  .hero{padding:8px 2px 5px}
+  .hero h1{font-size:30px}
+  .hero p{font-size:13px;line-height:1.45}
+  .filters{grid-template-columns:1fr 1fr}
+  .actions{grid-template-columns:1fr}
+  .item{grid-template-columns:28px 1fr 32px}
+  .stepTitle{font-size:16px;margin-bottom:7px}
+  .list{gap:6px;margin-top:7px}
+}
 </style>
 </head>
 <body>
@@ -127,6 +138,7 @@ input,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(-
       </div>
     </div>
     <button id="spinBtn" class="primary spin">🎯 開始旋轉</button>
+    <div style="font-size:11px;color:var(--muted);margin-top:5px">🔊 旋轉時會播放轉盤節奏音，中獎時會有提示音</div>
     <div id="result"></div>
   </section>
 
@@ -162,36 +174,70 @@ function websiteOf(tags={}){
   if(u && !/^https?:\/\//i.test(u)) u="https://"+u;
   return u;
 }
-let audioCtx=null, spinSoundTimer=null;
+let audioCtx=null, spinSoundTimer=null, audioUnlocked=false;
 function ensureAudio(){
-  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC) return false;
+  if(!audioCtx) audioCtx=new AC();
   if(audioCtx.state==="suspended") audioCtx.resume();
+  return true;
 }
+function unlockAudio(){
+  if(!ensureAudio()) return;
+  if(audioUnlocked) return;
+  const b=audioCtx.createBuffer(1,1,22050);
+  const s=audioCtx.createBufferSource();
+  s.buffer=b;s.connect(audioCtx.destination);s.start(0);
+  audioUnlocked=true;
+}
+["touchstart","pointerdown","click"].forEach(evt=>{
+  document.addEventListener(evt,unlockAudio,{once:true,passive:true});
+});
 function tone(freq=440,dur=.08,type="sine",gain=.05,when=0){
-  ensureAudio();
+  if(!ensureAudio()) return;
+  const t=audioCtx.currentTime+when;
   const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-  o.type=type;o.frequency.setValueAtTime(freq,audioCtx.currentTime+when);
-  g.gain.setValueAtTime(0.0001,audioCtx.currentTime+when);
-  g.gain.exponentialRampToValueAtTime(gain,audioCtx.currentTime+when+.01);
-  g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+when+dur);
-  o.connect(g).connect(audioCtx.destination);
-  o.start(audioCtx.currentTime+when);o.stop(audioCtx.currentTime+when+dur+.02);
+  o.type=type;
+  o.frequency.setValueAtTime(freq,t);
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(Math.max(.001,gain),t+.008);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g);g.connect(audioCtx.destination);
+  o.start(t);o.stop(t+dur+.03);
+}
+function clickTick(strength=.05){
+  if(!ensureAudio()) return;
+  const t=audioCtx.currentTime;
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.type="square";
+  o.frequency.setValueAtTime(920,t);
+  o.frequency.exponentialRampToValueAtTime(430,t+.025);
+  g.gain.setValueAtTime(strength,t);
+  g.gain.exponentialRampToValueAtTime(.0001,t+.04);
+  o.connect(g);g.connect(audioCtx.destination);
+  o.start(t);o.stop(t+.045);
 }
 function startSpinSound(){
-  ensureAudio(); let i=0;
-  if(spinSoundTimer) clearInterval(spinSoundTimer);
+  stopSpinSound();
+  unlockAudio();
+  let i=0;
+  clickTick(.07);
   spinSoundTimer=setInterval(()=>{
-    const f=180+(i%6)*22;
-    tone(f,.045,"triangle",.035);
+    clickTick(i<18?.045:i<34?.035:.025);
     i++;
-  },95);
+  },110);
 }
 function stopSpinSound(){
   if(spinSoundTimer){clearInterval(spinSoundTimer);spinSoundTimer=null;}
 }
 function winSound(){
-  [523,659,784,1047].forEach((f,i)=>tone(f,.22,"sine",.07,i*.11));
-  tone(1318,.36,"triangle",.05,.44);
+  unlockAudio();
+  tone(523,.20,"sine",.07,0);
+  tone(659,.20,"sine",.07,.10);
+  tone(784,.22,"sine",.075,.20);
+  tone(1047,.34,"triangle",.08,.32);
+  tone(1318,.42,"sine",.05,.48);
+  if(navigator.vibrate) navigator.vibrate([70,45,110]);
 }
 function cuisineOf(tags={}){
   const c=(tags.cuisine||"").replaceAll(";","、").replaceAll("_"," ");
@@ -301,7 +347,13 @@ function renderList(){
         <small>${Math.round(p.dist)} 公尺・${esc(cuisineOf(p.tags))}${phoneOf(p.tags)?"・有電話":""}</small>
         <div class="siteHint">${site?"🌐 點字卡開啟店家官網":"尚無公開官網資料"}</div>
       </div>
-      <a href="${mapUrl(p)}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><button class="mapmini">地圖</button></a>
+      <a href="${mapUrl(p)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="開啟 Google Maps" title="開啟 Google Maps">
+        <button class="mapmini" aria-label="地圖">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M9.5 3 14.5 1 21 3.5v17L14.5 18 9.5 20 3 17.5v-17L9.5 3Zm0 2.1L5 3.4v12.8l4.5 1.7V5.1Zm2 12.5 3-1.2V3.4l-3 1.2v13Zm5-1.5 2.5 1V4.8l-2.5-1v12.3Z"/>
+          </svg>
+        </button>
+      </a>
     </div>`;
   }).join("");
   document.querySelectorAll(".item.hasSite").forEach(el=>{
@@ -331,7 +383,9 @@ function drawWheel(){
 $("#spinBtn").onclick=()=>{
   if(!places.length||busy)return;
   busy=true;$("#spinBtn").disabled=true;resultEl.innerHTML="";
-  ensureAudio(); startSpinSound();
+  unlockAudio();
+  if(audioCtx && audioCtx.state==="suspended") audioCtx.resume();
+  startSpinSound();
   const n=places.length, idx=Math.floor(Math.random()*n), step=360/n;
   const target=-(idx*step+step/2);
   const extra=360*(5+Math.floor(Math.random()*3));
